@@ -1,17 +1,11 @@
 <?php
-// setup-database.php - Run this file once to set up your database
-
-// Enable error reporting for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
-// Database configuration
 $host = "localhost";
 $dbname = "wildlife_booking";
 $username = "root";
 $password = "";
 
-// HTML header for nicer output
 echo "<!DOCTYPE html>
 <html>
 <head>
@@ -30,19 +24,14 @@ echo "<!DOCTYPE html>
         <hr>";
 
 try {
-    // First, create the database if it doesn't exist
     $pdo = new PDO("mysql:host=$host", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    // Create the database if it doesn't exist
     $pdo->exec("CREATE DATABASE IF NOT EXISTS $dbname");
     echo "<p class='success'>Database '$dbname' created or already exists.</p>";
-    
-    // Connect to the specific database
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
-    // Create tables
+ 
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS destinations (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -118,8 +107,7 @@ try {
         );
     ");
     echo "<p class='success'>Tables created successfully.</p>";
-    
-    // Insert destinations data
+
     $insertDestinations = "
     INSERT IGNORE INTO destinations (code, name, base_price, description) VALUES
     ('serengeti', 'Serengeti National Park', 1999.00, 'Experience the Great Migration in Tanzania'),
@@ -131,17 +119,13 @@ try {
     ";
     $pdo->exec($insertDestinations);
     echo "<p class='success'>Destinations data inserted successfully.</p>";
-    
-    // Generate availability data
+
     $destinations = ['serengeti', 'amazon', 'galapagos', 'yellowstone', 'borneo', 'barrier-reef'];
     $insertCount = 0;
-    
-    // Check if there's already availability data
     $checkStmt = $pdo->query("SELECT COUNT(*) FROM availability");
     $availabilityCount = $checkStmt->fetchColumn();
     
-    if ($availabilityCount < 100) { // Only generate if we don't have much data
-        // Prepare the statement once outside the loops
+    if ($availabilityCount < 100) { /
         $availStmt = $pdo->prepare("
             INSERT IGNORE INTO availability (destination, available_date, spots_available)
             VALUES (:destination, :available_date, :spots_available)
